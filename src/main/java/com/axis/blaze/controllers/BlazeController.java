@@ -1,7 +1,9 @@
 package com.axis.blaze.controllers;
 
-import com.axis.blaze.models.BlazeDecisionCalculationRequest;
-import com.axis.blaze.models.BlazeVariableCalculationRequest;
+import com.axis.blaze.exception.BlazeException;
+import com.axis.blaze.response.BlazeVariableCalculationResponse;
+import reactor.core.publisher.Mono;
+import com.axis.blaze.response.BlazeDecisionCalculationResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,42 +17,38 @@ import java.util.Random;
 public class BlazeController {
 
     @RequestMapping(value = "/blazeVariableCalculate", method = RequestMethod.POST)
-    public Map<String, String> getBlazeVariableResponse(@RequestBody BlazeVariableCalculationRequest request) throws Exception {
-        Map<String, String> response = new HashMap<>();
+    public Mono<Object> getBlazeVariableResponse(@RequestBody String request) throws BlazeException {
 
         if (checkFailure() || request == null) {
-            throw new Exception();
+            throw new BlazeException("Internal Server Error", "Internal Server Error during Blaze Variable Calculation");
         } else {
-            response.put("id", "CODE12309");
-            response.put("blazeVariableOne", "22310");
-            response.put("blazeVariableTwo", "90081");
-        }
+            try {
+                Thread.sleep(5000);
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
+                BlazeVariableCalculationResponse response = new BlazeVariableCalculationResponse("CODE12309", 1500, 6500);
+                return Mono.just(response);
+            } catch (InterruptedException e) {
 
+            }
         }
-        return response;
+        return Mono.empty();
     }
 
-
     @RequestMapping(value = "/blazeDecisionCalculate", method = RequestMethod.POST)
-    public Map<String, String> getBlazeDecisionResponse(@RequestBody BlazeDecisionCalculationRequest request) throws Exception {
-        Map<String, String> response = new HashMap<>();
+    public Mono<Object> getBlazeDecisionResponse(@RequestBody String request) throws BlazeException {
 
         if (checkFailure() || request == null) {
-            throw new Exception();
+            throw new BlazeException("Internal Server Error", "Internal Server Error during Blaze Decision Calculation");
         } else {
-            response.put("decision", "Approved");
-        }
+            try {
+                Thread.sleep(3000);
+                BlazeDecisionCalculationResponse response = new BlazeDecisionCalculationResponse("Approved");
+                return Mono.just(response);
+            } catch (InterruptedException e) {
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-
+            }
         }
-        return response;
+        return Mono.empty();
     }
 
     private Boolean checkFailure() {
